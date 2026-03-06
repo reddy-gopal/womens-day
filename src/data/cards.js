@@ -1,0 +1,68 @@
+const cards = [
+    {
+      id: 1,
+      title: "She Believed She Could",
+      category: "Inspiration",
+      quote: "She believed she could, so she did.",
+      bg: "#f8c8d4",
+      accent: "#c0396b",
+    },
+    {
+      id: 2,
+      title: "From Baby to Woman",
+      category: "Journey",
+      quote: "Every girl is a story waiting to be told.",
+      bg: "#fde8c8",
+      accent: "#e07b39",
+    },
+    {
+      id: 3,
+      title: "Overcame the Storm",
+      category: "Resilience",
+      quote: "She wore her struggles like wings.",
+      bg: "#d4eaf8",
+      accent: "#2e6da4",
+    },
+    {
+      id: 4,
+      title: "Happy Women's Day",
+      category: "Wishes",
+      quote: "Here's to strong women — may we know them, be them, raise them.",
+      bg: "#dff5e3",
+      accent: "#2e7d4f",
+    },
+    {
+      id: 5,
+      title: "Rise & Inspire",
+      category: "Inspiration",
+      quote: "A woman with a voice is by definition a strong woman.",
+      bg: "#ede8f8",
+      accent: "#6a3db8",
+    },
+    {
+      id: 6,
+      title: "Unbreakable",
+      category: "Resilience",
+      quote: "She was unstoppable — not because she didn't have failures, but because she kept going.",
+      bg: "#fdf4c8",
+      accent: "#b8860b",
+    },
+    {
+      id: 7,
+      title: "A Mother's Love",
+      category: "Journey",
+      quote: "The world is better because she is in it.",
+      bg: "#f8d4ec",
+      accent: "#a0306e",
+    },
+    {
+      id: 8,
+      title: "Bold & Beautiful",
+      category: "Wishes",
+      quote: "Wishing you a day as bold and beautiful as you are.",
+      bg: "#d4f8f4",
+      accent: "#1a8c7e",
+    },
+  ];
+  
+  export default cards;
