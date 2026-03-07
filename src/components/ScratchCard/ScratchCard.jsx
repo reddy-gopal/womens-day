@@ -14,31 +14,31 @@ const TEASERS = [
 // ─── 3 random message sets ────────────────────────────────────────────────────
 const REVEAL_SETS = [
     [
-        { text: '🌸',                                   isBig: true        },
-        { text: '"You don\'t just inspire —',           isQuote: true      },
-        { text: 'you transform.',                       isHighlight: true  },
-        { text: 'Every life you\'ve touched',           isQuote: true      },
-        { text: 'carries your light forward."',         isQuote: true      },
-        { text: '── Happy Women\'s Day ──',             isTag: true        },
-        { text: 'with love, from NIAT 💛',              isSub: true        },
+        { text: '🌸', isBig: true },
+        { text: '"You don\'t just inspire —', isQuote: true },
+        { text: 'you transform.', isHighlight: true },
+        { text: 'Every life you\'ve touched', isQuote: true },
+        { text: 'carries your light forward."', isQuote: true },
+        { text: '── Happy Women\'s Day ──', isTag: true },
+        { text: 'with love, from NIAT 💛', isSub: true },
     ],
     [
-        { text: '✨',                                   isBig: true        },
-        { text: '"Not all heroes announce themselves.', isQuote: true      },
-        { text: 'Some just show up —',                  isHighlight: true  },
-        { text: 'every single day —',                   isQuote: true      },
-        { text: 'and change everything."',              isQuote: true      },
-        { text: '── Happy Women\'s Day ──',             isTag: true        },
-        { text: 'with love, from NIAT 💛',              isSub: true        },
+        { text: '✨', isBig: true },
+        { text: '"Not all heroes announce themselves.', isQuote: true },
+        { text: 'Some just show up —', isHighlight: true },
+        { text: 'every single day —', isQuote: true },
+        { text: 'and change everything."', isQuote: true },
+        { text: '── Happy Women\'s Day ──', isTag: true },
+        { text: 'with love, from NIAT 💛', isSub: true },
     ],
     [
-        { text: '💛',                                   isBig: true        },
-        { text: '"The world is kinder,',                isQuote: true      },
-        { text: 'brighter, and braver',                 isHighlight: true  },
-        { text: 'because of women',                     isQuote: true      },
-        { text: 'who refuse to shrink."',               isQuote: true      },
-        { text: '── Happy Women\'s Day ──',             isTag: true        },
-        { text: 'with love, from NIAT 💛',              isSub: true        },
+        { text: '💛', isBig: true },
+        { text: '"The world is kinder,', isQuote: true },
+        { text: 'brighter, and braver', isHighlight: true },
+        { text: 'because of women', isQuote: true },
+        { text: 'who refuse to shrink."', isQuote: true },
+        { text: '── Happy Women\'s Day ──', isTag: true },
+        { text: 'with love, from NIAT 💛', isSub: true },
     ],
 ];
 
@@ -75,14 +75,14 @@ function lineStyle(line) {
 }
 
 export default function ScratchCard({ onComplete }) {
-    const canvasRef        = useRef(null);
-    const [isScratching,   setIsScratching]   = useState(false);
+    const canvasRef = useRef(null);
+    const [isScratching, setIsScratching] = useState(false);
     const [scratchPercent, setScratchPercent] = useState(0);
-    const [isRevealed,     setIsRevealed]     = useState(false);
-    const [showBurst,      setShowBurst]      = useState(false);
-    const [teaserIdx,      setTeaserIdx]      = useState(0);
-    const [teaserVisible,  setTeaserVisible]  = useState(true);
-    const [cardIn,         setCardIn]         = useState(false);
+    const [isRevealed, setIsRevealed] = useState(false);
+    const [showBurst, setShowBurst] = useState(false);
+    const [teaserIdx, setTeaserIdx] = useState(0);
+    const [teaserVisible, setTeaserVisible] = useState(true);
+    const [cardIn, setCardIn] = useState(false);
 
     const [lines] = useState(
         () => REVEAL_SETS[Math.floor(Math.random() * REVEAL_SETS.length)]
@@ -113,11 +113,11 @@ export default function ScratchCard({ onComplete }) {
         const ctx = canvas.getContext('2d');
 
         const g = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        g.addColorStop(0,    '#c8960c');
+        g.addColorStop(0, '#c8960c');
         g.addColorStop(0.25, '#f5d76e');
-        g.addColorStop(0.5,  '#fceaa0');
+        g.addColorStop(0.5, '#fceaa0');
         g.addColorStop(0.75, '#f0c040');
-        g.addColorStop(1,    '#b8860b');
+        g.addColorStop(1, '#b8860b');
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -136,7 +136,7 @@ export default function ScratchCard({ onComplete }) {
 
         // Hint text
         ctx.fillStyle = 'rgba(120,60,0,0.55)';
-        ctx.font      = '600 13px DM Sans, sans-serif';
+        ctx.font = '600 13px DM Sans, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('✨  scratch here  ✨', canvas.width / 2, canvas.height / 2);
     }, []);
@@ -144,14 +144,14 @@ export default function ScratchCard({ onComplete }) {
     const scratch = (x, y) => {
         if (isRevealed) return;
         const canvas = canvasRef.current;
-        const ctx    = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
         ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
         ctx.arc(x, y, 28, 0, Math.PI * 2);
         ctx.fill();
 
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels    = imageData.data;
+        const pixels = imageData.data;
         let transparent = 0;
         for (let i = 3; i < pixels.length; i += 16) {
             if (pixels[i] === 0) transparent++;
@@ -163,7 +163,7 @@ export default function ScratchCard({ onComplete }) {
             setIsRevealed(true);
             setShowBurst(true);
             canvas.style.transition = 'opacity 0.9s ease';
-            canvas.style.opacity    = '0';
+            canvas.style.opacity = '0';
         }
     };
 
@@ -176,7 +176,7 @@ export default function ScratchCard({ onComplete }) {
     const handleTouchMove = (e) => {
         e.preventDefault();
         if (!isScratching) return;
-        const rect  = canvasRef.current.getBoundingClientRect();
+        const rect = canvasRef.current.getBoundingClientRect();
         const touch = e.touches[0];
         scratch(touch.clientX - rect.left, touch.clientY - rect.top);
     };
@@ -202,7 +202,6 @@ export default function ScratchCard({ onComplete }) {
                 {/* ── NIAT logo ─────────────────────────────────────── */}
                 <img src="/niat.png" alt="NIAT" style={{
                     height: '30px', width: 'auto', objectFit: 'contain',
-                    filter: 'brightness(0) invert(1)',
                     opacity: 0.75, marginBottom: '28px',
                     animation: 'fadeIn 0.8s ease both',
                 }} />
@@ -421,9 +420,9 @@ export default function ScratchCard({ onComplete }) {
                                 transition: 'color 0.4s ease',
                                 animation: scratchPercent < 5 ? 'pulse 2.5s ease infinite' : 'none',
                             }}>
-                                {scratchPercent < 5   && '👆  Use your finger to scratch'}
-                                {scratchPercent >= 5  && scratchPercent < 30  && "Keep going, it\'s worth it..."}
-                                {scratchPercent >= 30 && scratchPercent < 65  && "Don\'t stop — you\'re almost there 🔥"}
+                                {scratchPercent < 5 && '👆  Use your finger to scratch'}
+                                {scratchPercent >= 5 && scratchPercent < 30 && "Keep going, it\'s worth it..."}
+                                {scratchPercent >= 30 && scratchPercent < 65 && "Don\'t stop — you\'re almost there 🔥"}
                             </span>
                         </>
                     ) : (
