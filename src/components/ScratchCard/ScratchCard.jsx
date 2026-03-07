@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import FloatingPetals from './FloatingPetals';
 import Button from '../shared/Button';
 import CelebrationBurst from '../shared/CelebrationBurst';
+import { trackEvent } from '../../lib/analytics';
 
 // ─── Rotating teasers above card — pure curiosity ────────────────────────────
 const TEASERS = [
@@ -160,6 +161,7 @@ export default function ScratchCard({ onComplete }) {
         setScratchPercent(percent);
 
         if (percent > 65 && !isRevealed) {
+            trackEvent('scratch_revealed');
             setIsRevealed(true);
             setShowBurst(true);
             canvas.style.transition = 'opacity 0.9s ease';
@@ -440,7 +442,10 @@ export default function ScratchCard({ onComplete }) {
                             }}>
                                 Now, make a card for the woman who made you. 🌸
                             </span>
-                            <Button variant="primary" onClick={onComplete}>
+                            <Button variant="primary" onClick={() => {
+                                trackEvent('scratch_continued');
+                                onComplete();
+                            }}>
                                 Let's Celebrate Her →
                             </Button>
                         </div>

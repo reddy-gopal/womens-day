@@ -1,45 +1,46 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { trackEvent } from '../../lib/analytics';
 
 // ─── Content that REACTS to user state ─────────────────────────────────────
 const CONTENT = {
     before: {
-        topTag:    'MARCH 8 · WOMEN\'S DAY 2025',
+        topTag: 'MARCH 8 · WOMEN\'S DAY 2025',
         headline1: 'One photo.',
         headline2: 'One card that says',
         headline3: 'everything',
-        sub:       'Upload a photo of the woman who\nmoves your world — or yourself.',
-        circleTop:    'Who are you\ncelebrating today?',
+        sub: 'Upload a photo of the woman who\nmoves your world — or yourself.',
+        circleTop: 'Who are you\ncelebrating today?',
         circleBottom: '↓  tap to add her photo  ↓',
-        cta:       '📷  Add the Photo',
-        pulse:     true,
+        cta: '📷  Add the Photo',
+        pulse: true,
     },
     after: {
-        topTag:    '✦  SHE\'S GOING TO LOVE THIS  ✦',
+        topTag: '✦  SHE\'S GOING TO LOVE THIS  ✦',
         headline1: 'There she is.',
         headline2: 'Now let\'s turn this into',
         headline3: 'something she keeps. 💛',
-        sub:       'A card made by you, for her —\ncarrying NIAT\'s love forward.',
-        circleTop:    'Perfect. 🌸',
+        sub: 'A card made by you, for her —\ncarrying NIAT\'s love forward.',
+        circleTop: 'Perfect. 🌸',
         circleBottom: 'tap to change',
-        cta:       '✨  Create Her Card',
-        pulse:     false,
+        cta: '✨  Create Her Card',
+        pulse: false,
     },
 };
 
 // ─── Loading messages ───────────────────────────────────────────────────────
 const LOADING_SEQUENCE = [
-    { text: 'Picking the perfect design...',  emoji: '🎨' },
-    { text: 'Framing her beautifully...',      emoji: '🖼️' },
-    { text: 'Adding a little NIAT magic...',   emoji: '✨' },
-    { text: 'Almost ready to amaze her...',    emoji: '🌸' },
+    { text: 'Picking the perfect design...', emoji: '🎨' },
+    { text: 'Framing her beautifully...', emoji: '🖼️' },
+    { text: 'Adding a little NIAT magic...', emoji: '✨' },
+    { text: 'Almost ready to amaze her...', emoji: '🌸' },
 ];
 
 export default function PhotoUpload({ userData, setUserData, onNext }) {
-    const [localPhoto, setLocalPhoto]     = useState(null);
+    const [localPhoto, setLocalPhoto] = useState(null);
     const [localPhotoFile, setLocalPhotoFile] = useState(null);
-    const [loadingStep, setLoadingStep]   = useState(false);
-    const [loadingIdx, setLoadingIdx]     = useState(0);
-    const [progress, setProgress]         = useState(0);
+    const [loadingStep, setLoadingStep] = useState(false);
+    const [loadingIdx, setLoadingIdx] = useState(0);
+    const [progress, setProgress] = useState(0);
     const [justUploaded, setJustUploaded] = useState(false); // for reveal animation
     const fileInputRef = useRef(null);
 
@@ -60,6 +61,7 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
 
     // ── Create card ─────────────────────────────────────────────────────────
     const handleCreate = () => {
+        trackEvent('photo_uploaded');
         setUserData(prev => ({ ...prev, photo: localPhoto, photoFile: localPhotoFile }));
         setLoadingStep(true);
     };
@@ -93,7 +95,7 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
                 position: 'relative', overflow: 'hidden',
             }}>
                 {/* Background shimmer orbs */}
-                {['#f9a825','#ce93d8','#ff6b9d'].map((c, i) => (
+                {['#f9a825', '#ce93d8', '#ff6b9d'].map((c, i) => (
                     <div key={i} style={{
                         position: 'absolute',
                         width: 160, height: 160,
@@ -187,11 +189,11 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
 
             {/* ── Background orbs ──────────────────────────────────── */}
             {[
-                { s: 200, t: '2%',  l: '-8%',  c: '#f9a825', d: '0s',   dr: '9s'  },
-                { s: 140, t: '60%', l: '78%',  c: '#ce93d8', d: '2s',   dr: '11s' },
-                { s: 100, t: '38%', l: '-4%',  c: '#ff80ab', d: '1s',   dr: '8s'  },
-                { s: 80,  t: '82%', l: '18%',  c: '#f9a825', d: '3.5s', dr: '10s' },
-                { s: 120, t: '12%', l: '82%',  c: '#e91e8c', d: '0.5s', dr: '12s' },
+                { s: 200, t: '2%', l: '-8%', c: '#f9a825', d: '0s', dr: '9s' },
+                { s: 140, t: '60%', l: '78%', c: '#ce93d8', d: '2s', dr: '11s' },
+                { s: 100, t: '38%', l: '-4%', c: '#ff80ab', d: '1s', dr: '8s' },
+                { s: 80, t: '82%', l: '18%', c: '#f9a825', d: '3.5s', dr: '10s' },
+                { s: 120, t: '12%', l: '82%', c: '#e91e8c', d: '0.5s', dr: '12s' },
             ].map((o, i) => (
                 <div key={i} style={{
                     position: 'absolute',
@@ -207,11 +209,11 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
 
             {/* ── Floating petals ───────────────────────────────────── */}
             {[
-                { t: '8%',  l: '6%',  s: 14, d: '0s',   dr: '7s'  },
-                { t: '22%', l: '88%', s: 18, d: '1.5s', dr: '9s'  },
-                { t: '55%', l: '4%',  s: 12, d: '0.8s', dr: '8s'  },
-                { t: '75%', l: '90%', s: 16, d: '2.5s', dr: '6s'  },
-                { t: '90%', l: '45%', s: 20, d: '1s',   dr: '10s' },
+                { t: '8%', l: '6%', s: 14, d: '0s', dr: '7s' },
+                { t: '22%', l: '88%', s: 18, d: '1.5s', dr: '9s' },
+                { t: '55%', l: '4%', s: 12, d: '0.8s', dr: '8s' },
+                { t: '75%', l: '90%', s: 16, d: '2.5s', dr: '6s' },
+                { t: '90%', l: '45%', s: 20, d: '1s', dr: '10s' },
             ].map((p, i) => (
                 <div key={i} style={{
                     position: 'absolute',
@@ -369,8 +371,8 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
                                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
                                     stroke="rgba(249,168,37,0.8)" strokeWidth="1.5"
                                     strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                                    <circle cx="12" cy="13" r="4"/>
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                    <circle cx="12" cy="13" r="4" />
                                 </svg>
                                 <span style={{
                                     fontSize: '10px',

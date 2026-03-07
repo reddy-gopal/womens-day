@@ -4,10 +4,11 @@ import MentionOverlay from './MentionOverlay';
 import Button from '../shared/Button';
 import CelebrationBurst from '../shared/CelebrationBurst';
 import cards from '../../data/cards';
-import { captureCard, shareToWhatsAppStatus, downloadBlob } from '../../hooks/useShareCard';
+import { drawCarouselCardToBlob, shareToWhatsAppStatus, downloadBlob } from '../../hooks/useCardCanvas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { trackEvent } from '../../lib/analytics';
 
 export default function Carousel({ onBack }) {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -96,8 +97,7 @@ export default function Carousel({ onBack }) {
         setShowMention(false);
         setIsLoading(true);
         try {
-            // FIX: capture from the HIDDEN clone (no transform), not the carousel card
-            const blob = await captureCard(`capture-card-${currentCardId}`);
+            const blob = await drawCarouselCardToBlob(currentCard, mentionData);
 
             let msg = 'Wishing you a beautiful Women\'s Day! 🌸';
             if (mentionData.recipientName) {
@@ -105,6 +105,7 @@ export default function Carousel({ onBack }) {
             }
 
             await shareToWhatsAppStatus(blob, `womens-day-card-${currentCardId}.png`, msg);
+            await trackEvent('carousel_share');
             setHasShared(true);
         } catch (e) {
             console.error('Share error:', e);
@@ -118,9 +119,9 @@ export default function Carousel({ onBack }) {
         if (multiSelected.length > 0) { await downloadAllSelected(); return; }
         setIsLoading(true);
         try {
-            // FIX: capture from the HIDDEN clone (no transform)
-            const blob = await captureCard(`capture-card-${currentCardId}`);
+            const blob = await drawCarouselCardToBlob(currentCard, mentionData);
             downloadBlob(blob, `womens-day-card-${currentCardId}.png`);
+            await trackEvent('carousel_download');
             setHasShared(true);
         } catch (e) {
             console.error('Download error:', e);
@@ -146,7 +147,9 @@ export default function Carousel({ onBack }) {
         setIsLoading(true);
         try {
             for (const id of multiSelected) {
-                const blob = await captureCard(`capture-card-${id}`);
+                const selCard = filteredCards.find(c => c.id === id);
+                if (!selCard) continue;
+                const blob = await drawCarouselCardToBlob(selCard, mentionData);
                 downloadBlob(blob, `womens-day-card-${id}.png`);
                 await new Promise(r => setTimeout(r, 300)); // stagger downloads
             }
@@ -165,7 +168,9 @@ export default function Carousel({ onBack }) {
         try {
             const blobs = [];
             for (const id of multiSelected) {
-                const blob = await captureCard(`capture-card-${id}`);
+                const selCard = filteredCards.find(c => c.id === id);
+                if (!selCard) continue;
+                const blob = await drawCarouselCardToBlob(selCard, mentionData);
                 blobs.push({ blob, filename: `womens-day-card-${id}.png` });
             }
 
@@ -178,7 +183,9 @@ export default function Carousel({ onBack }) {
                 if (navigator.clipboard && window.isSecureContext) {
                     await navigator.clipboard.writeText(shareText);
                 }
-            } catch (e) { }
+            } catch (err) {
+                // ignore clipboard errors
+            }
 
             if (navigator.share) {
                 const files = blobs.map(b => new File([b.blob], b.filename, { type: 'image/png' }));
@@ -241,27 +248,7 @@ export default function Carousel({ onBack }) {
                 <div style={{ width: '60px' }} />
             </div>
 
-            {/* ── Hidden capture clones ─────────────────────────
-                These are the cards html2canvas actually captures.
-                They have NO transform/translate applied — so they always
-                render correctly. opacity:0 instead of visibility:hidden
-                so html2canvas can still read them.
-            ─────────────────────────────────────────────────────────── */}
-            <div style={hiddenCaptureStyle}>
-                {filteredCards.map((card) => (
-                    <div
-                        key={card.id}
-                        style={{ width: '400px', height: '500px', marginBottom: '8px' }}
-                    >
-                        <CarouselCard
-                            id={`capture-card-${card.id}`}
-                            card={card}
-                            mentionData={mentionData}
-                            customStyle={{ width: '400px', height: '500px' }}
-                        />
-                    </div>
-                ))}
-            </div>
+
 
             {/* ── Carousel ───────────────────────────────────────────── */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

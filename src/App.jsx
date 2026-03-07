@@ -5,6 +5,7 @@ import ScratchCard from './components/ScratchCard/ScratchCard';
 import PhotoUpload from './components/PhotoCard/PhotoUpload';
 import CardGenerator from './components/PhotoCard/CardGenerator';
 import Carousel from './components/GreetingCarousel/Carousel';
+import AdminDashboard from './pages/AdminDashboard';
 
 const STAGES = {
   SCRATCH: 'scratch',
@@ -22,6 +23,10 @@ export default function App() {
     photo: null,
     photoFile: null,
   });
+
+  if (window.location.pathname === '/admin') {
+    return <AdminDashboard />;
+  }
 
   // Current view based on state
   const getCurrentView = () => {
