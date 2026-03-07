@@ -112,7 +112,7 @@ export async function drawCardToBlob({ photoBase64, logoBase64, quote, occasionL
     ctx.font = `600 ${FS_DATE}px "DM Sans", sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.textAlign = 'right';
-    ctx.fillText('March 8, 2025', W(0.94), H(0.045));
+    ctx.fillText('March 8, 2026', W(0.94), H(0.045));
 
     // ── NIAT Logo — top-left ──────────────────────────────────────────────────
     const logoLeft = W(0.06);
@@ -136,7 +136,7 @@ export async function drawCardToBlob({ photoBase64, logoBase64, quote, occasionL
     ctx.font = `600 ${FS_TITLE}px "Cormorant Garamond", Georgia, serif`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText("Women's Day 2025", W(0.5), titleY);
+    ctx.fillText("Women's Day 2026", W(0.5), titleY);
 
     // ── Photo circle ─────────────────────────────────────────────────────────
     const photoR = W(0.18);
