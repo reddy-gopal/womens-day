@@ -203,13 +203,6 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                     <span>From all of us at NIAT,</span>
                     <span>thank you for being in her corner.</span>
                 </div>
-                <div style={{
-                    fontFamily: 'var(--font-body)', fontSize: '14px',
-                    color: '#7a3030', marginTop: '6px', opacity: 0.8,
-                    animation: 'fadeInUp 0.7s ease 0.2s both',
-                }}>
-                    Send it before she starts her day. 🌸
-                </div>
             </div>
 
             {/* ── Outer wrapper to fix document height for scaled card ───────────────────── */}
