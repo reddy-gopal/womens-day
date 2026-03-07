@@ -469,7 +469,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div style={{ textAlign: 'center', color: '#ccc', fontSize: '11px', marginTop: '32px' }}>
-                    NIAT Admin · Happy Women's Day 2026 · Only accessible at /admin
+                    NIAT Admin · HER CHAMPION 2026 · Only accessible at /admin
                 </div>
             </div>
         </div>

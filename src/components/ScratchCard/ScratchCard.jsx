@@ -471,14 +471,15 @@ export default function ScratchCard({ onComplete }) {
                                 color: 'rgba(255,255,255,0.45)',
                                 letterSpacing: '0.03em', textAlign: 'center',
                             }}>
-                                Now, create a card for the woman who made you who you are. 🌸
+                                Someone at NIAT created something for you this Women's Day.We can't tell you what it is.
+
                             </span>
                             <Button variant="primary" onClick={() => {
                                 trackEvent('scratch_continued');
                                 onComplete();
                             }}>
-                                Let's Celebrate Her →
-                            </Button>
+                        👇click to find out. 
+                  </Button>
                         </div>
                     )}
                 </div>

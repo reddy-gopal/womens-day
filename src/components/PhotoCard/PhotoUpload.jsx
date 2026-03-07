@@ -1,28 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { trackEvent } from '../../lib/analytics';
 
-// ─── Content that REACTS to user state ─────────────────────────────────────
 const CONTENT = {
     before: {
-        topTag: 'MARCH 8 · HAPPY WOMEN\'S DAY 2026',
+        topTag: 'NIAT · Women\'s Day · March 8, 2026',
         headline1: 'One photo.',
         headline2: 'One card that says',
         headline3: 'everything',
-        sub: 'Upload a photo of the woman who inspires your world - or celebrate yourself.',
-        circleTop: 'Who are you\ncelebrating today?',
-        circleBottom: '↓  tap to add her photo  ↓',
-        cta: '📷  Add the Photo',
+        sub: 'Upload your photo—because this Women\'s Day, every face at NIAT deserves to be celebrated.',
+        circleTop: 'NIAT celebrates every champion in its halls. 🌸',
+        circleBottom: 'Your card is almost ready.',
+        cta: '📷  Add Your Photo',
         pulse: true,
     },
     after: {
-        topTag: '✦  SHE\'S GOING TO LOVE THIS  ✦',
-        headline1: 'There she is.',
+        topTag: '✦ THIS ONE\'S GOING TO MEAN SOMETHING ✦',
+        headline1: 'There it is.',
         headline2: 'Now let\'s turn this into',
-        headline3: 'something she keeps. 💛',
-        sub: 'A card made by you, for her —\ncarrying NIAT\'s love forward.',
+        headline3: 'something worth keeping. 💛',
+        sub: 'A card made with you, for the women who made us , carrying NIAT\'s story forward.',
         circleTop: 'Perfect. 🌸',
-        circleBottom: 'tap to change',
-        cta: '✨  Create Her Card',
+        circleBottom: 'tap to change your photo',
+        cta: '✨  Create Your Card',
         pulse: false,
     },
 };
@@ -380,7 +379,7 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
                                     fontFamily: 'var(--font-body)',
                                     letterSpacing: '0.1em',
                                     textTransform: 'uppercase',
-                                }}>her photo</span>
+                                }}>Your photo</span>
                             </div>
                         )}
                     </div>
@@ -404,7 +403,8 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
                 <div style={{
                     fontFamily: 'var(--font-body)',
                     fontSize: '12px',
-                    color: localPhoto ? '#f9a825' : 'rgba(255,255,255,0.35)',
+                    fontWeight: 700,
+                    color: '#ffffff',
                     textAlign: 'center',
                     marginTop: '18px',
                     letterSpacing: '0.06em',
@@ -481,7 +481,7 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
                 zIndex: 1,
                 textAlign: 'center',
             }}>
-                🔒  Photo stays on your device · Never stored
+                Your photo is only used to create your card. It stays with you.
             </div>
 
             {/* ── Step indicator ────────────────────────────────────── */}
