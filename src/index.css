@@ -1,68 +1,257 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --rose-deep: #9d1b5e;
+  --rose-mid: #c2185b;
+  --rose-soft: #e91e8c;
+  --blush: #fce4ec;
+  --blush-light: #fff0f5;
+  --purple-deep: #4a148c;
+  --purple-mid: #7b1fa2;
+  --purple-soft: #ce93d8;
+  --gold: #f9a825;
+  --gold-light: #fff8e1;
+  --white: #ffffff;
+  --off-white: #fdf8f9;
+  --text-dark: #1a0a12;
+  --text-mid: #5d2a42;
+  --text-muted: #a06080;
+  --whatsapp: #25d366;
+  --scratch-gold: #d4af37;
+  --scratch-dark: #8b7320;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-script: 'Pinyon Script', cursive;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 20px;
+  --text-xl: 26px;
+  --text-2xl: 34px;
+  --text-3xl: 46px;
+  --text-4xl: 62px;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 999px;
+  --shadow-soft: 0 4px 24px rgba(157, 27, 94, 0.12);
+  --shadow-deep: 0 12px 48px rgba(157, 27, 94, 0.22);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.10);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--off-white);
+  color: var(--text-dark);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+input:focus {
+  outline: none;
+  border-color: var(--rose-mid) !important;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  border: none;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-family: var(--font-body);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Page Transitions ─── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  a:hover {
-    color: #747bff;
+
+  to {
+    opacity: 1;
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─── Scratch Card ─── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes lineReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Petals ─── */
+@keyframes petalFloat {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+
+  33% {
+    transform: translateY(-18px) rotate(120deg) scale(1.04);
+  }
+
+  66% {
+    transform: translateY(8px) rotate(240deg) scale(0.96);
+  }
+
+  100% {
+    transform: translateY(0) rotate(360deg) scale(1);
+  }
+}
+
+@keyframes petalFloatUp {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ─── Card Generation ─── */
+@keyframes cardBloom {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ─── Buttons ─── */
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 24px rgba(194, 24, 91, 0.25);
+  }
+
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 6px 32px rgba(194, 24, 91, 0.4);
+  }
+}
+
+/* ─── Celebration ─── */
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ─── Carousel ─── */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ─── Loading ─── */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bobUpAndDown {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ctaPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 32px rgba(249, 168, 37, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  50% {
+    transform: scale(1.025);
+    box-shadow: 0 12px 44px rgba(249, 168, 37, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.15);
   }
 }

@@ -1,69 +1,86 @@
-import React, { useState } from "react";
-import CardGrid from "./components/CardGrid";
-import SelectedBar from "./components/SelectedBar";
-import cards from "./data/cards";
+import React, { useState } from 'react';
+import PageTransition from './components/shared/PageTransition';
 
-/**
- * App.jsx
- * Root component. Manages global selected cards state.
- * Renders header, CardGrid, and SelectedBar.
- */
-const App = () => {
-  // selectedCards: array of { card, ref } — order matters for WhatsApp share
-  const [selectedCards, setSelectedCards] = useState([]);
+import ScratchCard from './components/ScratchCard/ScratchCard';
+import PhotoUpload from './components/PhotoCard/PhotoUpload';
+import CardGenerator from './components/PhotoCard/CardGenerator';
+import Carousel from './components/GreetingCarousel/Carousel';
 
-  const handleToggle = (card, ref) => {
-    setSelectedCards((prev) => {
-      const exists = prev.find((s) => s.card.id === card.id);
-      if (exists) {
-        // Deselect
-        return prev.filter((s) => s.card.id !== card.id);
-      } else {
-        // Select — append to maintain order
-        return [...prev, { card, ref }];
-      }
-    });
-  };
+const STAGES = {
+  SCRATCH: 'scratch',
+  UPLOAD: 'upload',
+  PORTFOLIO: 'portfolio',
+  CAROUSEL: 'carousel',
+};
 
-  const handleClearAll = () => {
-    setSelectedCards([]);
+export default function App() {
+  const [stage, setStage] = useState(() => {
+    return localStorage.getItem('hasScratched') ? STAGES.UPLOAD : STAGES.SCRATCH;
+  });
+
+  const [userData, setUserData] = useState({
+    photo: null,
+    photoFile: null,
+  });
+
+  // Current view based on state
+  const getCurrentView = () => {
+    switch (stage) {
+      case STAGES.SCRATCH:
+        return (
+          <ScratchCard
+            key="scratch"
+            onComplete={() => {
+              localStorage.setItem('hasScratched', 'true');
+              setStage(STAGES.UPLOAD);
+            }}
+          />
+        );
+
+      case STAGES.UPLOAD:
+        return (
+          <PhotoUpload
+            key="upload"
+            userData={userData}
+            setUserData={setUserData}
+            onNext={() => setStage(STAGES.PORTFOLIO)}
+          />
+        );
+
+      case STAGES.PORTFOLIO:
+        return (
+          <CardGenerator
+            key="portfolio"
+            userData={userData}
+            onBrowseCards={() => setStage(STAGES.CAROUSEL)}
+            onBack={() => setStage(STAGES.UPLOAD)}
+          />
+        );
+
+      case STAGES.CAROUSEL:
+        return (
+          <Carousel
+            key="carousel"
+            onBack={() => setStage(STAGES.PORTFOLIO)}
+          />
+        );
+
+      default:
+        return (
+          <ScratchCard
+            key="scratch"
+            onComplete={() => {
+              localStorage.setItem('hasScratched', 'true');
+              setStage(STAGES.UPLOAD);
+            }}
+          />
+        );
+    }
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#fdf6f8", fontFamily: "sans-serif" }}>
-      {/* Header */}
-      <header
-        style={{
-          padding: "24px 20px 12px",
-          textAlign: "center",
-          borderBottom: "1px solid #f0e0e8",
-          backgroundColor: "#fff",
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: "22px", color: "#c0396b", fontWeight: 700 }}>
-          🌸 Women's Day Cards
-        </h1>
-        <p style={{ margin: "6px 0 0", fontSize: "14px", color: "#888" }}>
-          Select cards to share as WhatsApp Status
-        </p>
-      </header>
-
-      {/* Card Grid */}
-      <main style={{ paddingBottom: selectedCards.length > 0 ? "90px" : "24px" }}>
-        <CardGrid
-          cards={cards}
-          selectedCards={selectedCards}
-          onToggle={handleToggle}
-        />
-      </main>
-
-      {/* Bottom Action Bar */}
-      <SelectedBar
-        selectedCards={selectedCards}
-        onClearAll={handleClearAll}
-      />
-    </div>
+    <PageTransition transitionKey={stage}>
+      {getCurrentView()}
+    </PageTransition>
   );
-};
-
-export default App;
+}
