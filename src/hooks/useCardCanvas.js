@@ -68,7 +68,7 @@ function wrapText(ctx, text, maxWidth) {
 // ─── PHOTO CARD ───────────────────────────────────────────────────────────────
 export async function drawCardToBlob({ photoBase64, logoBase64, quote, occasionLine }) {
     // All font sizes as % of card width — slightly larger for readability
-    const FS_TITLE = S(0.058);   // "Women's Day 2026" title
+    const FS_TITLE = S(0.058);   // "Happy Women's Day 2026" title
     const FS_QUOTE = S(0.038);  // quote text
     const FS_OCCASION = S(0.030);
     const FS_DATE = S(0.024);
@@ -131,12 +131,12 @@ export async function drawCardToBlob({ photoBase64, logoBase64, quote, occasionL
         } catch { /* ignore */ }
     }
 
-    // ── Title — "Women's Day 2026" ───────────────────────────────────────────
+    // ── Title — "Happy Women's Day 2026" ──────────────────────────────────────
     const titleY = logoTop + logoMaxH + H(0.04);
     ctx.font = `600 ${FS_TITLE}px "Cormorant Garamond", Georgia, serif`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText("Women's Day 2026", W(0.5), titleY);
+    ctx.fillText("Happy Women's Day 2026", W(0.5), titleY);
 
     // ── Photo circle ─────────────────────────────────────────────────────────
     const photoR = W(0.18);

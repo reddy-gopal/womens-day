@@ -4,11 +4,11 @@ import { trackEvent } from '../../lib/analytics';
 // ─── Content that REACTS to user state ─────────────────────────────────────
 const CONTENT = {
     before: {
-        topTag: 'MARCH 8 · WOMEN\'S DAY 2026',
+        topTag: 'MARCH 8 · HAPPY WOMEN\'S DAY 2026',
         headline1: 'One photo.',
         headline2: 'One card that says',
         headline3: 'everything',
-        sub: 'Upload a photo of the woman who\nmoves your world — or yourself.',
+        sub: 'Upload a photo of the woman who inspires your world - or celebrate yourself.',
         circleTop: 'Who are you\ncelebrating today?',
         circleBottom: '↓  tap to add her photo  ↓',
         cta: '📷  Add the Photo',

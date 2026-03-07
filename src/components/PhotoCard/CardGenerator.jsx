@@ -177,7 +177,7 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                     marginBottom: '8px',
                     animation: 'fadeIn 0.7s ease both',
                 }}>
-                    ✦  MARCH 8 · WOMEN'S DAY 2026  ✦
+                    ✦  MARCH 8 · HAPPY WOMEN'S DAY 2026  ✦
                 </div>
                 <div style={{
                     fontFamily: 'var(--font-script, cursive)',
@@ -285,7 +285,7 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                             zIndex: 2,
                             boxSizing: 'border-box',
                         }}>
-                            {/* Title — "Women's Day 2026" */}
+                            {/* Title — "Happy Women's Day 2026" */}
                             <div style={{
                                 fontFamily: 'var(--font-display)',
                                 fontWeight: '600',
@@ -295,7 +295,7 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                                 textAlign: 'center',
                                 letterSpacing: '0.01em',
                             }}>
-                                Women's Day 2026
+                                Happy Women's Day 2026
                             </div>
 
                             {/* Photo circle */}
@@ -354,15 +354,6 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                             </div>
                         </div>
 
-                        {/* Watermark */}
-                        <div style={{
-                            position: 'absolute', bottom: '8px', right: '12px',
-                            fontFamily: 'var(--font-body)', fontSize: '10px',
-                            color: 'rgba(255,255,255,0.18)',
-                            letterSpacing: '0.14em', textTransform: 'uppercase', zIndex: 2,
-                        }}>
-                            niat.com
-                        </div>
                     </div>
                 </div>
             </div>
