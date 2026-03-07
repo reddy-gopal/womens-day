@@ -43,6 +43,8 @@ const REVEAL_SETS = [
     ],
 ];
 
+const SCRATCH_THRESHOLD = 70; // percent at which auto-complete triggers
+
 function lineStyle(line) {
     if (line.isBig) return {
         fontSize: '32px', margin: '0 0 10px', lineHeight: 1,
@@ -80,6 +82,7 @@ export default function ScratchCard({ onComplete }) {
     const [isScratching, setIsScratching] = useState(false);
     const [scratchPercent, setScratchPercent] = useState(0);
     const [isRevealed, setIsRevealed] = useState(false);
+    const [isAutoCompleting, setIsAutoCompleting] = useState(false);
     const [showBurst, setShowBurst] = useState(false);
     const [teaserIdx, setTeaserIdx] = useState(0);
     const [teaserVisible, setTeaserVisible] = useState(true);
@@ -142,8 +145,29 @@ export default function ScratchCard({ onComplete }) {
         ctx.fillText('✨  scratch here  ✨', canvas.width / 2, canvas.height / 2);
     }, []);
 
+    const autoCompleteReveal = (canvas, ctx, onDone) => {
+        let alpha = 1.0;
+
+        const step = () => {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            alpha -= 0.08;
+
+            if (alpha > 0) {
+                requestAnimationFrame(step);
+            } else {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                onDone();
+            }
+        };
+
+        requestAnimationFrame(step);
+    };
+
     const scratch = (x, y) => {
-        if (isRevealed) return;
+        if (isRevealed || isAutoCompleting) return;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         ctx.globalCompositeOperation = 'destination-out';
@@ -160,16 +184,21 @@ export default function ScratchCard({ onComplete }) {
         const percent = +(transparent / (pixels.length / 16) * 100).toFixed(2);
         setScratchPercent(percent);
 
-        if (percent > 65 && !isRevealed) {
-            trackEvent('scratch_revealed');
-            setIsRevealed(true);
-            setShowBurst(true);
-            canvas.style.transition = 'opacity 0.9s ease';
-            canvas.style.opacity = '0';
+        if (percent >= SCRATCH_THRESHOLD && !isAutoCompleting && !isRevealed) {
+            setIsAutoCompleting(true);
+            autoCompleteReveal(canvas, ctx, () => {
+                trackEvent('scratch_revealed');
+                setIsRevealed(true);
+                setShowBurst(true);
+                setIsAutoCompleting(false);
+                canvas.style.transition = 'opacity 0.9s ease';
+                canvas.style.opacity = '0';
+            });
         }
     };
 
     const handleMouseMove = (e) => {
+        if (isAutoCompleting || isRevealed) return;
         if (!isScratching) return;
         const rect = canvasRef.current.getBoundingClientRect();
         scratch(e.clientX - rect.left, e.clientY - rect.top);
@@ -177,6 +206,7 @@ export default function ScratchCard({ onComplete }) {
 
     const handleTouchMove = (e) => {
         e.preventDefault();
+        if (isAutoCompleting || isRevealed) return;
         if (!isScratching) return;
         const rect = canvasRef.current.getBoundingClientRect();
         const touch = e.touches[0];
@@ -370,15 +400,16 @@ export default function ScratchCard({ onComplete }) {
                                     position: 'absolute',
                                     top: 0, left: 0,
                                     width: '100%', height: '100%',
-                                    cursor: 'crosshair',
+                                    cursor: isAutoCompleting ? 'default' : 'crosshair',
                                     touchAction: 'none',
+                                    pointerEvents: isAutoCompleting ? 'none' : 'auto',
                                     zIndex: 5,
                                     borderRadius: 'var(--radius-lg)',
                                 }}
-                                onMouseDown={() => setIsScratching(true)}
+                                onMouseDown={() => !isAutoCompleting && !isRevealed && setIsScratching(true)}
                                 onMouseUp={() => setIsScratching(false)}
                                 onMouseMove={handleMouseMove}
-                                onTouchStart={() => setIsScratching(true)}
+                                onTouchStart={() => !isAutoCompleting && !isRevealed && setIsScratching(true)}
                                 onTouchEnd={() => setIsScratching(false)}
                                 onTouchMove={handleTouchMove}
                                 onMouseLeave={() => setIsScratching(false)}
@@ -395,20 +426,40 @@ export default function ScratchCard({ onComplete }) {
                 }}>
                     {!isRevealed ? (
                         <>
-                            {scratchPercent > 5 && scratchPercent < 65 && (
+                            {/* Progress bar + percentage (capped at 70% until reveal) */}
+                            {scratchPercent > 2 && (
                                 <div style={{
-                                    width: '180px', height: '3px',
-                                    background: 'rgba(255,255,255,0.15)',
-                                    borderRadius: '999px', overflow: 'hidden',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    width: '100%',
                                 }}>
                                     <div style={{
-                                        width: `${Math.min(scratchPercent / 65 * 100, 100)}%`,
-                                        height: '100%',
-                                        background: 'linear-gradient(90deg, #f9a825, #fff)',
-                                        borderRadius: '999px',
-                                        transition: 'width 0.1s linear',
-                                        boxShadow: '0 0 6px rgba(249,168,37,0.6)',
-                                    }} />
+                                        width: '180px', height: '6px',
+                                        background: 'rgba(255,255,255,0.15)',
+                                        borderRadius: '999px', overflow: 'hidden',
+                                    }}>
+                                        <div style={{
+                                            width: `${Math.min(scratchPercent, SCRATCH_THRESHOLD)}%`,
+                                            height: '100%',
+                                            background: 'linear-gradient(90deg, #f9a825, #fff)',
+                                            borderRadius: '999px',
+                                            transition: 'width 0.1s linear',
+                                            boxShadow: (scratchPercent >= SCRATCH_THRESHOLD || isAutoCompleting) ? '0 0 12px rgba(249,168,37,0.8)' : '0 0 6px rgba(249,168,37,0.6)',
+                                            animation: (scratchPercent >= SCRATCH_THRESHOLD || isAutoCompleting) ? 'pulse 1s ease infinite' : 'none',
+                                        }} />
+                                    </div>
+                                    <span style={{
+                                        fontFamily: 'var(--font-body)',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        color: '#f9a825',
+                                        letterSpacing: '0.05em',
+                                        minWidth: '44px',
+                                    }}>
+                                        {Math.round(Math.min(scratchPercent, SCRATCH_THRESHOLD))}%
+                                    </span>
                                 </div>
                             )}
                             <span style={{
@@ -420,11 +471,12 @@ export default function ScratchCard({ onComplete }) {
                                 letterSpacing: '0.04em',
                                 textAlign: 'center',
                                 transition: 'color 0.4s ease',
-                                animation: scratchPercent < 5 ? 'pulse 2.5s ease infinite' : 'none',
+                                animation: scratchPercent < 5 && !isAutoCompleting ? 'pulse 2.5s ease infinite' : 'none',
                             }}>
-                                {scratchPercent < 5 && '👆  Use your finger to scratch'}
-                                {scratchPercent >= 5 && scratchPercent < 30 && "Keep going, it\'s worth it..."}
-                                {scratchPercent >= 30 && scratchPercent < 65 && "Don\'t stop — you\'re almost there 🔥"}
+                                {(scratchPercent >= SCRATCH_THRESHOLD || isAutoCompleting) && '✨ Revealing...'}
+                                {scratchPercent < 5 && !isAutoCompleting && '👆  Use your finger to scratch'}
+                                {scratchPercent >= 5 && scratchPercent < 30 && !isAutoCompleting && "Keep going, it's worth it..."}
+                                {scratchPercent >= 30 && scratchPercent < SCRATCH_THRESHOLD && "Don't stop — you're almost there 🔥"}
                             </span>
                         </>
                     ) : (
