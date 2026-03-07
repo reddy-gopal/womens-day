@@ -18,11 +18,11 @@ const OCCASION_LINE = "Happy Women's Day. 🌸";
 async function blobUrlToBase64(blobUrl) {
     if (!blobUrl || !blobUrl.startsWith('blob:')) return blobUrl;
     try {
-        const res  = await fetch(blobUrl);
+        const res = await fetch(blobUrl);
         const blob = await res.blob();
         return new Promise((resolve, reject) => {
             const r = new FileReader();
-            r.onload  = () => resolve(r.result);
+            r.onload = () => resolve(r.result);
             r.onerror = reject;
             r.readAsDataURL(blob);
         });
@@ -34,11 +34,21 @@ export default function CardGenerator({ userData, onBrowseCards }) {
     const cardRef = useRef(null);
 
     const [isGenerating, setIsGenerating] = useState(false);
-    const [hasShared,    setHasShared]    = useState(false);
-    const [actionDone,   setActionDone]   = useState(null);
-    const [photoBase64,  setPhotoBase64]  = useState(null);
-    const [logoBase64,   setLogoBase64]   = useState(null);
-    const [cardScale,    setCardScale]    = useState(1);
+    const [hasShared, setHasShared] = useState(false);
+    const [actionDone, setActionDone] = useState(null);
+    const [photoBase64, setPhotoBase64] = useState(null);
+    const [logoBase64, setLogoBase64] = useState(null);
+    const [cardScale, setCardScale] = useState(1);
+    const [cardHeight, setCardHeight] = useState(0);
+
+    useEffect(() => {
+        if (!cardRef.current) return;
+        const observer = new ResizeObserver((entries) => {
+            if (entries[0]) setCardHeight(entries[0].target.offsetHeight);
+        });
+        observer.observe(cardRef.current);
+        return () => observer.disconnect();
+    }, [photoBase64, logoBase64]);
 
     useEffect(() => {
         if (!userData.photo) return;
@@ -65,7 +75,7 @@ export default function CardGenerator({ userData, onBrowseCards }) {
 
     useEffect(() => {
         const calc = () => {
-            const avail = window.innerWidth - 64;
+            const avail = window.innerWidth - 32; // padding 16px each side
             setCardScale(avail < 380 ? avail / 380 : 1);
         };
         calc();
@@ -134,15 +144,37 @@ export default function CardGenerator({ userData, onBrowseCards }) {
             padding: '16px 12px 40px', boxSizing: 'border-box',
             position: 'relative', overflowX: 'hidden',
         }}>
+            <style>{`
+                @keyframes cardGradientMove {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+                @keyframes cardShimmer {
+                    0% { transform: translateX(-150%) skewX(-15deg); }
+                    30% { transform: translateX(250%) skewX(-15deg); }
+                    100% { transform: translateX(250%) skewX(-15deg); }
+                }
+                @keyframes goldPulse {
+                    0% { opacity: 0.8; filter: drop-shadow(0 0 2px rgba(249,168,37,0.3)); }
+                    50% { opacity: 1; filter: drop-shadow(0 0 6px rgba(249,168,37,0.8)); }
+                    100% { opacity: 0.8; filter: drop-shadow(0 0 2px rgba(249,168,37,0.3)); }
+                }
+                @keyframes floatOrb {
+                    0% { transform: translateY(0) scale(1); opacity: 0; }
+                    50% { transform: translateY(-20px) scale(1.2); opacity: 0.4; }
+                    100% { transform: translateY(-40px) scale(1); opacity: 0; }
+                }
+            `}</style>
             {hasShared && <CelebrationBurst />}
 
             {/* Floating decorations */}
             {[
-                { emoji: '✨', t: '3%',  l: '4%',  size: 24, d: '0s'   },
-                { emoji: '🌸', t: '8%',  l: '88%', size: 20, d: '1s'   },
-                { emoji: '💛', t: '55%', l: '3%',  size: 18, d: '2s'   },
+                { emoji: '✨', t: '3%', l: '4%', size: 24, d: '0s' },
+                { emoji: '🌸', t: '8%', l: '88%', size: 20, d: '1s' },
+                { emoji: '💛', t: '55%', l: '3%', size: 18, d: '2s' },
                 { emoji: '✨', t: '60%', l: '91%', size: 22, d: '0.5s' },
-                { emoji: '🌸', t: '85%', l: '6%',  size: 16, d: '1.5s' },
+                { emoji: '🌸', t: '85%', l: '6%', size: 16, d: '1.5s' },
                 { emoji: '💛', t: '90%', l: '85%', size: 20, d: '2.5s' },
             ].map((d, i) => (
                 <div key={i} style={{
@@ -180,134 +212,159 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                 </div>
             </div>
 
-            {/* ── Scale wrapper — only for visual display ───────────────────── */}
+            {/* ── Outer wrapper to fix document height for scaled card ───────────────────── */}
             <div style={{
                 zIndex: 1,
-                animation: 'cardBloom 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.2s both',
-                // Compensate height after scale so buttons aren't pushed down
-                marginBottom: cardScale < 1 ? `calc(18px - ${PREVIEW_W * (1 - cardScale) * 0.5}px)` : '18px',
-                filter: 'drop-shadow(0 8px 32px rgba(153,27,28,0.30)) drop-shadow(0 2px 8px rgba(153,27,28,0.15))',
-                transform: `scale(${cardScale})`,
-                transformOrigin: 'top center',
-                width: `${PREVIEW_W}px`,      // keep layout width fixed
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                height: cardHeight ? `${cardHeight * cardScale}px` : 'auto',
+                marginBottom: '24px',
+                transition: 'height 0.3s ease',
             }}>
+                {/* ── Scale wrapper — only for visual scaling ───────────────────── */}
+                <div style={{
+                    animation: 'cardBloom 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.2s both',
+                    filter: 'drop-shadow(0 8px 32px rgba(153,27,28,0.30)) drop-shadow(0 2px 8px rgba(153,27,28,0.15))',
+                    transform: `scale(${cardScale})`,
+                    transformOrigin: 'top center',
+                    width: `${PREVIEW_W}px`,      // keep layout width fixed
+                    height: cardHeight ? `${cardHeight}px` : 'auto',
+                }}>
 
-                {/* ── THE CARD — ref is HERE ─────────────────────────────────── */}
-                <div
-                    ref={cardRef}
-                    style={{
-                        width: `${PREVIEW_W}px`,
-                        // No fixed height — always grows to fit all content
-                        borderRadius: '20px',
-                        background: 'linear-gradient(155deg, #7f1415 0%, #991B1C 45%, #a82020 100%)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        padding: '0 0 20px',
-                        boxSizing: 'border-box',
-                    }}
-                >
-                    {/* Vignette */}
-                    <div style={{
-                        position: 'absolute', inset: 0,
-                        background: 'radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.07) 0%, rgba(0,0,0,0.22) 100%)',
-                        pointerEvents: 'none',
-                    }} />
-
-                    {/* Top gold bar */}
-                    <div style={{
-                        position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
-                        background: 'linear-gradient(90deg, transparent, #f9a825, transparent)',
-                    }} />
-
-                    {/* Logo top-left */}
-                    {logoBase64 && (
-                        <div style={{ position: 'absolute', top: '12px', left: '14px', zIndex: 3 }}>
-                            <img src={logoBase64} alt="NIAT"
-                                style={{ height: '22px', width: 'auto', objectFit: 'contain', display: 'block' }} />
-                        </div>
-                    )}
-
-                    {/* Date top-right */}
-                    <div style={{
-                        position: 'absolute', top: '14px', right: '14px', zIndex: 3,
-                        fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: '600',
-                        color: 'rgba(255,255,255,0.42)',
-                    }}>
-                        March 8, 2026
-                    </div>
-
-                    {/* Corner emoji — right only (left has logo) */}
-                    <div style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '15px', opacity: 0.55 }}>🌸</div>
-                    <div style={{ position: 'absolute', bottom: '10px', left: '10px',  fontSize: '13px', opacity: 0.45 }}>💛</div>
-                    <div style={{ position: 'absolute', bottom: '10px', right: '10px', fontSize: '13px', opacity: 0.45 }}>✨</div>
-
-                    {/* ── Content ─────────────────────────────────────────── */}
-                    <div style={{
-                        display: 'flex', flexDirection: 'column', alignItems: 'center',
-                        width: '100%', padding: '36px 0 8px',
-                        zIndex: 2, boxSizing: 'border-box',
-                    }}>
-                        {/* Title */}
+                    {/* ── THE CARD — ref is HERE ─────────────────────────────────── */}
+                    <div
+                        ref={cardRef}
+                        style={{
+                            width: `${PREVIEW_W}px`,
+                            // No fixed height — always grows to fit all content
+                            borderRadius: '20px',
+                            background: 'linear-gradient(135deg, #7f1415, #991B1C, #c12a2a, #991B1C, #7f1415)',
+                            backgroundSize: '300% 300%',
+                            animation: 'cardGradientMove 9s ease infinite',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            padding: '0 0 20px',
+                            boxSizing: 'border-box',
+                        }}
+                    >
+                        {/* Vignette */}
                         <div style={{
-                            fontFamily: 'var(--font-display)', fontWeight: '600',
-                            fontSize: '22px', color: '#ffffff',
-                            marginBottom: '10px', textAlign: 'center', letterSpacing: '0.01em',
-                        }}>
-                            HER CHAMPION 2026
-                        </div>
-
-                        {/* Photo circle */}
-                        <div style={{
-                            width: '108px', height: '108px', borderRadius: '50%',
-                            border: '3px solid #f9a825', overflow: 'hidden',
-                            boxShadow: '0 0 0 6px rgba(249,168,37,0.15), 0 4px 18px rgba(0,0,0,0.30)',
-                            flexShrink: 0, background: 'rgba(0,0,0,0.28)', marginBottom: '12px',
-                        }}>
-                            {photoBase64 && (
-                                <img src={photoBase64} alt=""
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                            )}
-                        </div>
-
-                        {/* Gold divider */}
-                        <div style={{
-                            width: '36px', height: '2px',
-                            background: 'rgba(249,168,37,0.80)', marginBottom: '14px',
+                            position: 'absolute', inset: 0,
+                            background: 'radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.07) 0%, rgba(0,0,0,0.22) 100%)',
+                            pointerEvents: 'none',
                         }} />
 
-                        {/* Quote — pre-line preserves \n\n paragraph breaks */}
+                        {/* Subtle floating orbs in background */}
+                        <div style={{ position: 'absolute', top: '20%', left: '15%', width: '30px', height: '30px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,168,37,0.4) 0%, transparent 70%)', animation: 'floatOrb 4s ease-in-out infinite', pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', top: '60%', right: '15%', width: '40px', height: '40px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,168,37,0.3) 0%, transparent 70%)', animation: 'floatOrb 5s ease-in-out infinite 2s', pointerEvents: 'none' }} />
+                        <div style={{ position: 'absolute', top: '80%', left: '25%', width: '20px', height: '20px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)', animation: 'floatOrb 3.5s ease-in-out infinite 1s', pointerEvents: 'none' }} />
+
+                        {/* Animated Shimmer Overlay */}
                         <div style={{
-                            fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: '400',
-                            fontSize: '14px', color: 'rgba(255,255,255,0.92)',
-                            textAlign: 'center', lineHeight: 1.65,
-                            padding: '0 20px', marginBottom: '12px',
-                            whiteSpace: 'pre-line',
+                            position: 'absolute', top: 0, left: '-50%', width: '60%', height: '100%',
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.03), rgba(255,255,255,0.12), rgba(255,255,255,0.03), transparent)',
+                            pointerEvents: 'none',
+                            animation: 'cardShimmer 7s infinite cubic-bezier(0.4, 0, 0.2, 1)',
+                        }} />
+
+                        {/* Top gold bar */}
+                        <div style={{
+                            position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
+                            background: 'linear-gradient(90deg, transparent, #f9a825, transparent)',
+                            animation: 'goldPulse 3s ease-in-out infinite',
+                        }} />
+
+                        {/* Logo top-left */}
+                        {logoBase64 && (
+                            <div style={{ position: 'absolute', top: '12px', left: '14px', zIndex: 3 }}>
+                                <img src={logoBase64} alt="NIAT"
+                                    style={{ height: '22px', width: 'auto', objectFit: 'contain', display: 'block' }} />
+                            </div>
+                        )}
+
+                        {/* Date top-right */}
+                        <div style={{
+                            position: 'absolute', top: '14px', right: '14px', zIndex: 3,
+                            fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: '600',
+                            color: 'rgba(255,255,255,0.42)',
                         }}>
-                            {`\u201C${CARD_QUOTE}\u201D`}
+                            March 8, 2026
                         </div>
 
-                        {/* Occasion */}
-                        <div style={{
-                            fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: '500',
-                            color: '#f9a825', textAlign: 'center',
-                            letterSpacing: '0.04em', marginBottom: '5px',
-                        }}>
-                            {OCCASION_LINE}
-                        </div>
+                        {/* Corner emoji — right only (left has logo) */}
+                        <div style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '15px', opacity: 0.55 }}>🌸</div>
+                        <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '13px', opacity: 0.45 }}>💛</div>
+                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', fontSize: '13px', opacity: 0.45 }}>✨</div>
 
-                        {/* Hashtags */}
+                        {/* ── Content ─────────────────────────────────────────── */}
                         <div style={{
-                            fontFamily: 'var(--font-body)', fontSize: '12px',
-                            color: 'rgba(255,255,255,0.72)', textAlign: 'center',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center',
+                            width: '100%', padding: '36px 0 8px',
+                            zIndex: 2, boxSizing: 'border-box',
                         }}>
-                            #HerChampion2026  #BuildsNIAT
+                            {/* Title */}
+                            <div style={{
+                                fontFamily: 'var(--font-display)', fontWeight: '600',
+                                fontSize: '22px', color: '#ffffff',
+                                marginBottom: '10px', textAlign: 'center', letterSpacing: '0.01em',
+                            }}>
+                                HER CHAMPION 2026
+                            </div>
+
+                            {/* Photo circle */}
+                            <div style={{
+                                width: '108px', height: '108px', borderRadius: '50%',
+                                border: '3px solid #f9a825', overflow: 'hidden',
+                                boxShadow: '0 0 0 6px rgba(249,168,37,0.15), 0 4px 18px rgba(0,0,0,0.30)',
+                                flexShrink: 0, background: 'rgba(0,0,0,0.28)', marginBottom: '12px',
+                            }}>
+                                {photoBase64 && (
+                                    <img src={photoBase64} alt=""
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                )}
+                            </div>
+
+                            {/* Gold divider */}
+                            <div style={{
+                                width: '36px', height: '2px',
+                                background: 'rgba(249,168,37,0.80)', marginBottom: '14px',
+                            }} />
+
+                            {/* Quote — pre-line preserves \n\n paragraph breaks */}
+                            <div style={{
+                                fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: '400',
+                                fontSize: '14px', color: 'rgba(255,255,255,0.92)',
+                                textAlign: 'center', lineHeight: 1.65,
+                                padding: '0 20px', marginBottom: '12px',
+                                whiteSpace: 'pre-line',
+                            }}>
+                                {`\u201C${CARD_QUOTE}\u201D`}
+                            </div>
+
+                            {/* Occasion */}
+                            <div style={{
+                                fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: '500',
+                                color: '#f9a825', textAlign: 'center',
+                                letterSpacing: '0.04em', marginBottom: '5px',
+                            }}>
+                                {OCCASION_LINE}
+                            </div>
+
+                            {/* Hashtags */}
+                            <div style={{
+                                fontFamily: 'var(--font-body)', fontSize: '12px',
+                                color: 'rgba(255,255,255,0.72)', textAlign: 'center',
+                            }}>
+                                #HerChampion2026  #BuildsNIAT
+                            </div>
                         </div>
-                    </div>
-                </div>{/* end cardRef div */}
-            </div>{/* end scale wrapper */}
+                    </div>{/* end cardRef div */}
+                </div>{/* end scale visual wrapper */}
+            </div>{/* end scale layout container */}
 
             {/* ── Buttons ──────────────────────────────────────────────────── */}
             <div style={{
