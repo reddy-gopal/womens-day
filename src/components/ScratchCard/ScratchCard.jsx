@@ -229,7 +229,7 @@ export default function ScratchCard({ onComplete }) {
                             letterSpacing: '0.18em', textTransform: 'uppercase',
                             marginBottom: '20px',
                         }}>
-                            ✦  March 8 · Women's Day 2025  ✦
+                            ✦  March 8 · Women's Day 2026  ✦
                         </div>
 
                         {/* Big bold hook */}

@@ -4,7 +4,7 @@ import { trackEvent } from '../../lib/analytics';
 // ─── Content that REACTS to user state ─────────────────────────────────────
 const CONTENT = {
     before: {
-        topTag: 'MARCH 8 · WOMEN\'S DAY 2025',
+        topTag: 'MARCH 8 · WOMEN\'S DAY 2026',
         headline1: 'One photo.',
         headline2: 'One card that says',
         headline3: 'everything',

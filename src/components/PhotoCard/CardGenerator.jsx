@@ -285,7 +285,7 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                             zIndex: 2,
                             boxSizing: 'border-box',
                         }}>
-                            {/* Title — "Women's Day 2025" */}
+                            {/* Title — "Women's Day 2026" */}
                             <div style={{
                                 fontFamily: 'var(--font-display)',
                                 fontWeight: '600',
@@ -295,7 +295,7 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                                 textAlign: 'center',
                                 letterSpacing: '0.01em',
                             }}>
-                                Women's Day 2025
+                                Women's Day 2026
                             </div>
 
                             {/* Photo circle */}
