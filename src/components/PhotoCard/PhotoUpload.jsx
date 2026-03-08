@@ -50,11 +50,39 @@ export default function PhotoUpload({ userData, setUserData, onNext }) {
         const file = e.target.files[0];
         if (!file) return;
         if (localPhoto?.startsWith('blob:')) URL.revokeObjectURL(localPhoto);
+
         const url = URL.createObjectURL(file);
-        setLocalPhoto(url);
-        setLocalPhotoFile(file);
-        setJustUploaded(true);
-        setTimeout(() => setJustUploaded(false), 800);
+        const img = new Image();
+        img.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                const MAX = 1000;
+                if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
+                else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+
+                canvas.width = w; canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                setLocalPhoto(dataUrl);
+                setLocalPhotoFile(file);
+            } catch (err) {
+                setLocalPhoto(url);
+                setLocalPhotoFile(file);
+            }
+            setJustUploaded(true);
+            setTimeout(() => setJustUploaded(false), 800);
+            URL.revokeObjectURL(url);
+        };
+        img.onerror = () => {
+            setLocalPhoto(url);
+            setLocalPhotoFile(file);
+            setJustUploaded(true);
+            setTimeout(() => setJustUploaded(false), 800);
+        };
+        img.src = url;
         e.target.value = '';
     };
 

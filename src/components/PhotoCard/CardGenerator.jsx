@@ -195,9 +195,9 @@ export default function CardGenerator({ userData, onBrowseCards }) {
                     ✦  NIAT · Women's Day · March 8, 2026  ✦
                 </div>
                 <div style={{
-                    fontFamily: 'var(--font-script, cursive)',
-                    fontSize: 'clamp(32px, 8vw, 42px)', color: '#991B1C',
-                    lineHeight: 1.15, animation: 'fadeInUp 0.7s ease 0.1s both',
+                    fontFamily: 'var(--font-display)', fontStyle: 'italic',
+                    fontSize: 'clamp(28px, 7vw, 38px)', color: '#991B1C',
+                    lineHeight: 1.2, animation: 'fadeInUp 0.7s ease 0.1s both',
                     display: 'flex', flexDirection: 'column',
                 }}>
                     <span>From all of us at NIAT,</span>
